@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clearpath</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0efeb;
+    --border: #e4e2dc;
+    --border2: #d0cec6;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #9e9b94;
+    --green: #1a7a4a;
+    --green-light: #e8f5ee;
+    --green-mid: #2d9d61;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --amber: #b45309;
+    --amber-light: #fef3e2;
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+  /* ---- SCREENS ---- */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ---- LOGIN ---- */
+  #login {
+    align-items: center; justify-content: center;
+    background: var(--surface);
+    flex-direction: column;
+    gap: 0;
+  }
+  .login-wrap { width: 100%; max-width: 380px; padding: 2rem 1.5rem; }
+  .login-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 2.5rem; }
+  .login-logo-mark { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .login-logo-mark svg { width: 18px; height: 18px; }
+  .login-logo-name { font-size: 18px; font-weight: 500; letter-spacing: -0.02em; }
+  .login-title { font-size: 22px; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 6px; }
+  .login-sub { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+  .profiles { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+  .profile-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    cursor: pointer; transition: all 0.15s ease;
+    width: 100%; text-align: left;
+  }
+  .profile-btn:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .profile-btn.selected { border-color: var(--green); background: var(--green-light); }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .av-t { background: #dbeafe; color: #1e40af; }
+  .av-d { background: #fce7f3; color: #9d174d; }
+  .profile-info { flex: 1; }
+  .profile-name { font-size: 14px; font-weight: 500; }
+  .profile-role { font-size: 12px; color: var(--text2); }
+  .profile-flag { font-size: 16px; }
+  .btn-primary {
+    width: 100%; padding: 12px; background: var(--green); color: #fff;
+    border: none; border-radius: var(--radius); font-family: var(--font);
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s ease; letter-spacing: -0.01em;
+  }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-primary:active { transform: translateY(0); }
+  .login-divider { text-align: center; font-size: 12px; color: var(--text3); margin: 1rem 0; }
+
+  /* ---- APP SHELL ---- */
+  #app { flex-direction: row; }
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 0; min-height: 100vh; position: sticky; top: 0; height: 100vh;
+  }
+  .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+  .logo-mark { width: 26px; height: 26px; background: var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark svg { width: 14px; height: 14px; }
+  .logo-name { font-size: 15px; font-weight: 500; letter-spacing: -0.02em; }
+  .user-pill { margin: 12px 12px 0; padding: 10px 12px; background: var(--bg); border-radius: var(--radius); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background 0.15s; }
+  .user-pill:hover { background: var(--surface2); }
+  .user-pill .avatar { width: 28px; height: 28px; font-size: 11px; }
+  .user-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .switch-btn { font-size: 11px; color: var(--green); font-weight: 500; }
+  nav { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-section { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 8px 4px; margin-top: 8px; }
+  .nav-section:first-child { margin-top: 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px; border-radius: 8px;
+    cursor: pointer; transition: all 0.12s ease;
+    font-size: 13.5px; color: var(--text2); font-weight: 400;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item svg { width: 15px; height: 15px; opacity: 0.7; flex-shrink: 0; }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--green-light); color: var(--green); font-weight: 500; }
+  .nav-item.active svg { opacity: 1; }
+  .sidebar-bottom { padding: 12px; border-top: 1px solid var(--border); }
+  .logout-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 13px; width: 100%; background: none; border: none; font-family: var(--font); transition: all 0.12s; }
+  .logout-btn:hover { background: var(--red-light); color: var(--red); }
+  .logout-btn svg { width: 14px; height: 14px; }
+
+  /* ---- MAIN ---- */
+  .main { flex: 1; overflow-y: auto; }
+  .page { display: none; padding: 28px 32px; max-width: 960px; }
+  .page.active { display: block; }
+  .page-header { margin-bottom: 24px; }
+  .page-title { font-size: 20px; font-weight: 500; letter-spacing: -0.03em; }
+  .page-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+  /* ---- METRICS ---- */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .metric-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .metric-val { font-size: 22px; font-weight: 500; letter-spacing: -0.03em; font-family: var(--mono); }
+  .metric-val.pos { color: var(--green); }
+  .metric-val.neg { color: var(--red); }
+  .metric-val.neutral { color: var(--text); }
+  .metric-change { font-size: 11px; margin-top: 4px; color: var(--text3); }
+  .metric-change.up { color: var(--green); }
+
+  /* ---- GRID 2 COL ---- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+  /* ---- CARD ---- */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* ---- TABLE ---- */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 0 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  .data-table th:last-child, .data-table td:last-child { text-align: right; }
+  .data-table td { padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .amount { font-family: var(--mono); font-size: 13px; }
+  .data-table .neg { color: var(--red); }
+  .data-table .pos { color: var(--green); }
+  .cat-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .cat-logement { background: #eff6ff; color: #1d4ed8; }
+  .cat-vie { background: #f0fdf4; color: #15803d; }
+  .cat-abos { background: #fef3c7; color: #92400e; }
+  .cat-sante { background: #fdf4ff; color: #7e22ce; }
+  .cat-voyage { background: #fff7ed; color: #c2410c; }
+
+  /* ---- PROGRESS BARS ---- */
+  .goal-item { margin-bottom: 16px; }
+  .goal-item:last-child { margin-bottom: 0; }
+  .goal-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .goal-name { font-size: 13.5px; font-weight: 500; }
+  .goal-amounts { font-size: 12px; color: var(--text2); font-family: var(--mono); }
+  .progress-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+  .fill-green { background: var(--green); }
+  .fill-amber { background: #f59e0b; }
+  .fill-blue { background: #3b82f6; }
+  .goal-meta { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* ---- MONTH SELECTOR ---- */
+  .month-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .month-btn { width: 28px; height: 28px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.12s; }
+  .month-btn:hover { background: var(--bg); border-color: var(--border2); }
+  .month-label { font-size: 14px; font-weight: 500; min-width: 100px; text-align: center; }
+
+  /* ---- BUDGET ROWS ---- */
+  .budget-section { margin-bottom: 20px; }
+  .budget-section-title { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; padding: 8px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+  .budget-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-label { flex: 1; font-size: 13.5px; }
+  .budget-bar-wrap { width: 100px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .budget-bar { height: 100%; border-radius: 2px; }
+  .budget-amount { font-family: var(--mono); font-size: 13px; min-width: 80px; text-align: right; }
+  .budget-total-row { display: flex; justify-content: space-between; padding: 12px 0 0; font-weight: 500; font-size: 14px; }
+
+  /* ---- ATO TAX ---- */
+  .ato-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .tax-bracket-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .tax-bracket-row:last-child { border-bottom: none; }
+  .bracket-range { font-size: 12px; color: var(--text2); font-family: var(--mono); min-width: 130px; }
+  .bracket-rate { font-size: 12px; font-weight: 500; min-width: 38px; }
+  .bracket-bar-wrap { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .bracket-bar { height: 100%; border-radius: 2px; background: var(--green); }
+  .bracket-active { background: var(--green-light); border-radius: 6px; padding: 0 6px; margin: -9px -6px; }
+  .slider-group { margin-bottom: 16px; }
+  .slider-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .slider-label span:last-child { font-family: var(--mono); font-weight: 500; }
+  input[type=range] { width: 100%; accent-color: var(--green); height: 4px; cursor: pointer; }
+  .tax-result-box { background: var(--green-light); border: 1px solid #a7f3d0; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .tax-result-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; }
+  .tax-result-row.total { border-top: 1px solid #a7f3d0; margin-top: 6px; padding-top: 10px; font-weight: 500; font-size: 14px; }
+  .tax-result-val { font-family: var(--mono); }
+  .tax-result-val.good { color: var(--green); }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .tag-fy { background: var(--blue-light); color: var(--blue); }
+  .deduction-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .deduction-item:last-child { border-bottom: none; }
+  .deduction-check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border2); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.12s; }
+  .deduction-check.checked { background: var(--green); border-color: var(--green); }
+  .deduction-check.checked::after { content: ''; display: block; width: 8px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+  .deduction-label { flex: 1; font-size: 13.5px; }
+  .deduction-amount { font-family: var(--mono); font-size: 13px; color: var(--green); }
+
+  /* ---- SUPER ---- */
+  .super-card { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #fff; border-radius: var(--radius-lg); padding: 22px; margin-bottom: 16px; }
+  .super-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .super-balance { font-size: 32px; font-weight: 300; font-family: var(--mono); letter-spacing: -0.03em; }
+  .super-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+  .super-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-top: 16px; overflow: hidden; }
+  .super-meta-item { background: rgba(0,0,0,0.15); padding: 10px 12px; }
+  .super-meta-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .super-meta-val { font-size: 14px; font-weight: 500; color: #fff; font-family: var(--mono); }
+
+  /* ---- SALARY SACRIFICE ---- */
+  .ss-result { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .ss-box { border-radius: var(--radius); padding: 14px; }
+  .ss-box.before { background: var(--red-light); border: 1px solid #fecaca; }
+  .ss-box.after { background: var(--green-light); border: 1px solid #a7f3d0; }
+  .ss-box-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .ss-box.before .ss-box-label { color: var(--red); }
+  .ss-box.after .ss-box-label { color: var(--green); }
+  .ss-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+  .ss-row-val { font-family: var(--mono); font-weight: 500; }
+
+  /* ---- TOAST ---- */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s ease; pointer-events: none; z-index: 999; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---- CHART MINI ---- */
+  .chart-wrap { position: relative; height: 160px; margin-top: 4px; }
+
+  @media (max-width: 768px) {
+    .metrics { grid-template-columns: repeat(2,1fr); }
+    .grid2, .grid3, .ato-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .page { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L3 14h12L9 2z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="login-logo-name">Clearpath</span>
+    </div>
+    <div class="login-title">Bonjour 👋</div>
+    <div class="login-sub">Choisissez votre profil pour continuer</div>
+    <div class="profiles">
+      <button class="profile-btn selected" onclick="selectProfile('thomas', this)">
+        <div class="avatar av-t">TH</div>
+        <div class="profile-info">
+          <div class="profile-name">Thomas</div>
+          <div class="profile-role">Budget France · EUR</div>
+        </div>
+        <span class="profile-flag">🇫🇷</span>
+      </button>
+      <button class="profile-btn" onclick="selectProfile('dorothy', this)">
+        <div class="avatar av-d">DO</div>
+        <div class="profile-info">
+          <div class="profile-name">Dorothy</div>
+          <div class="profile-role">Fiscalité Australie · AUD</div>
+        </div>
+        <span class="profile-flag">🇦🇺</span>
+      </button>
+    </div>
+    <button class="btn-primary" onclick="login()">Accéder à mon tableau de bord</button>
+    <div class="login-divider">Vos données sont chiffrées et privées</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L3 14h12L9 2z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="logo-name">Clearpath</span>
+    </div>
+    <div class="user-pill" onclick="logout()">
+      <div class="avatar av-t" id="nav-avatar">TH</div>
+      <span class="user-name" id="nav-name">Thomas</span>
+      <span class="switch-btn">Changer</span>
+    </div>
+    <nav>
+      <div class="nav-section">Vue d'ensemble</div>
+      <button class="nav-item active" onclick="showPage('dashboard', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <div class="nav-section">Finances</div>
+      <button class="nav-item" onclick="showPage('budget', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M1 6h14"/><circle cx="5" cy="9.5" r="1"/></svg>
+        Budget mensuel
+      </button>
+      <button class="nav-item" onclick="showPage('savings', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v14M3 5.5C3 4 5 3 8 3s5 1 5 2.5-2 2.5-5 2.5-5 1-5 2.5S5 13 8 13s5-1 5-2.5"/></svg>
+        Épargne
+      </button>
+      <button class="nav-item" onclick="showPage('projections', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,12 5,7 9,10 15,3"/><polyline points="11,3 15,3 15,7"/></svg>
+        Projections
+      </button>
+      <div class="nav-section ato-section" style="display:none">Australie (ATO)</div>
+      <button class="nav-item ato-item" style="display:none" onclick="showPage('tax', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2z" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
+        Impôt sur le revenu
+      </button>
+      <button class="nav-item ato-item" style="display:none" onclick="showPage('super', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Superannuation
+      </button>
+      <button class="nav-item ato-item" style="display:none" onclick="showPage('salary', this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/><circle cx="12" cy="11" r="3"/><path d="M12 10v2M11 11h2"/></svg>
+        Salary sacrifice
+      </button>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="logout()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3H3v10h3M10 5l3 3-3 3M13 8H7"/></svg>
+        Se déconnecter
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div class="page-title" id="dash-title">Bonjour, Thomas</div>
+        <div class="page-sub" id="dash-sub">Février 2026 · Voici votre situation financière du mois</div>
+      </div>
+      <div class="metrics" id="dash-metrics">
+        <div class="metric">
+          <div class="metric-label">Revenu mensuel</div>
+          <div class="metric-val neutral" id="dm-revenu">3 441 €</div>
+          <div class="metric-change">Salaire + tickets resto</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Dépenses</div>
+          <div class="metric-val neg" id="dm-depenses">−1 696 €</div>
+          <div class="metric-change">49% du revenu</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Épargne</div>
+          <div class="metric-val pos" id="dm-epargne">−340 €</div>
+          <div class="metric-change up">HSBC + R-Net + libre</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Revenus libres</div>
+          <div class="metric-val pos" id="dm-libres">1 405 €</div>
+          <div class="metric-change up">Après tout</div>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="card">
+          <div class="card-title">Dépenses par catégorie — fév. 2026</div>
+          <table class="data-table">
+            <thead><tr><th>Catégorie</th><th>Détail</th><th>Montant</th></tr></thead>
+            <tbody>
+              <tr><td><span class="cat-badge cat-logement">Logement</span></td><td>Loyer</td><td class="amount neg">−645 €</td></tr>
+              <tr><td><span class="cat-badge cat-vie">Alimentation</span></td><td>Courses + Auchan</td><td class="amount neg">−444 €</td></tr>
+              <tr><td><span class="cat-badge cat-abos">Abonnements</span></td><td>Bouygues, Basic-Fit…</td><td class="amount neg">−296 €</td></tr>
+              <tr><td><span class="cat-badge cat-sante">Santé</span></td><td>Mutuel</td><td class="amount neg">−56 €</td></tr>
+              <tr><td><span class="cat-badge cat-voyage">Australie</span></td><td>Compte joint HSBC</td><td class="amount neg">−269 €</td></tr>
+              <tr><td><span class="cat-badge cat-logement">Crédit</span></td><td>Crédit CMSO</td><td class="amount neg">−155 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">Objectifs d'épargne</div>
+          <div class="goal-item">
+            <div class="goal-header">
+              <span class="goal-name">Épargne générale</span>
+              <span class="goal-amounts">1 940 / 10 000 €</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-green" style="width: 19.4%"></div></div>
+            <div class="goal-meta">19% · objectif 2027</div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-header">
+              <span class="goal-name">R-Net</span>
+              <span class="goal-amounts">500 / 4 900 €</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-amber" style="width: 10.2%"></div></div>
+            <div class="goal-meta">10% · fonds d'urgence</div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-header">
+              <span class="goal-name">Compte joint HSBC</span>
+              <span class="goal-amounts">340 / 4 080 €</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-blue" style="width: 8.3%"></div></div>
+            <div class="goal-meta">8% · Australie</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenus libres — 12 mois</div>
+        <div class="chart-wrap"><canvas id="chartDash"></canvas></div>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div id="page-budget" class="page">
+      <div class="page-header">
+        <div class="page-title">Budget mensuel</div>
+        <div class="page-sub">Suivi détaillé de vos revenus et dépenses</div>
+      </div>
+      <div class="month-nav">
+        <button class="month-btn" onclick="changeMonth(-1)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L4 6l4 4"/></svg>
+        </button>
+        <div class="month-label" id="month-label">Février 2026</div>
+        <button class="month-btn" onclick="changeMonth(1)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+        </button>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Revenus</div>
+          <div class="budget-section">
+            <div class="budget-row">
+              <span class="budget-label">Salaire net</span>
+              <div class="budget-bar-wrap"><div class="budget-bar fill-green" id="bb-salaire" style="width:92%"></div></div>
+              <span class="budget-amount pos" id="ba-salaire">3 171 €</span>
+            </div>
+            <div class="budget-row">
+              <span class="budget-label">Tickets restaurant</span>
+              <div class="budget-bar-wrap"><div class="budget-bar fill-green" style="width:8%"></div></div>
+              <span class="budget-amount pos">270 €</span>
+            </div>
+          </div>
+          <div class="budget-total-row">
+            <span>Total revenus</span>
+            <span class="pos" style="font-family:var(--mono)" id="bt-revenus">3 441 €</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dépenses</div>
+          <div class="budget-section">
+            <div class="budget-row"><span class="budget-label">Loyer</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:100%;background:#ef4444"></div></div><span class="budget-amount neg">−645 €</span></div>
+            <div class="budget-row"><span class="budget-label">Courses</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:60%;background:#f97316"></div></div><span class="budget-amount neg">−270 €</span></div>
+            <div class="budget-row"><span class="budget-label">Courses Auchan</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:42%;background:#f97316"></div></div><span class="budget-amount neg" id="ba-auchan">−174 €</span></div>
+            <div class="budget-row"><span class="budget-label">Crédit CMSO</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:36%;background:#a855f7"></div></div><span class="budget-amount neg" id="ba-cmso">−155 €</span></div>
+            <div class="budget-row"><span class="budget-label">Bouygues</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:13%;background:#6b7280"></div></div><span class="budget-amount neg" id="ba-bouygues">−54 €</span></div>
+            <div class="budget-row"><span class="budget-label">Basic-Fit</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:8%;background:#6b7280"></div></div><span class="budget-amount neg">−36 €</span></div>
+            <div class="budget-row"><span class="budget-label">Barber</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:14%;background:#6b7280"></div></div><span class="budget-amount neg">−60 €</span></div>
+            <div class="budget-row"><span class="budget-label">SNCF</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:13%;background:#3b82f6"></div></div><span class="budget-amount neg">−56 €</span></div>
+            <div class="budget-row"><span class="budget-label">Mutuel</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:13%;background:#a855f7"></div></div><span class="budget-amount neg">−56 €</span></div>
+            <div class="budget-row"><span class="budget-label">Australie (HSBC)</span><div class="budget-bar-wrap"><div class="budget-bar" style="width:62%;background:#f59e0b"></div></div><span class="budget-amount neg">−269 €</span></div>
+          </div>
+          <div class="budget-total-row">
+            <span>Total dépenses</span>
+            <span class="neg" style="font-family:var(--mono)" id="bt-depenses">−1 696 €</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Épargne</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <div>
+            <div class="budget-row"><span class="budget-label">Épargne libre</span><span class="budget-amount pos" id="ba-epargne">0 €</span></div>
+            <div class="budget-row"><span class="budget-label">R-Net</span><span class="budget-amount pos" id="ba-rnet">0 €</span></div>
+            <div class="budget-row"><span class="budget-label">HSBC AUD</span><span class="budget-amount pos">−340 €</span></div>
+          </div>
+          <div style="grid-column:span 2">
+            <div class="budget-total-row" style="border-top:1px solid var(--border);padding-top:12px">
+              <span>Revenus libres</span>
+              <span class="pos" style="font-family:var(--mono);font-size:18px" id="bt-libres">1 405 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVINGS -->
+    <div id="page-savings" class="page">
+      <div class="page-header">
+        <div class="page-title">Épargne & Objectifs</div>
+        <div class="page-sub">Progression vers vos objectifs financiers</div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Total épargné</div><div class="metric-val pos">2 780 €</div><div class="metric-change">Cumulé depuis fév.</div></div>
+        <div class="metric"><div class="metric-label">Taux d'épargne</div><div class="metric-val neutral">44%</div><div class="metric-change">des revenus</div></div>
+        <div class="metric"><div class="metric-label">Épargne annuelle</div><div class="metric-val pos">19 170 €</div><div class="metric-change">Projection 2026</div></div>
+        <div class="metric"><div class="metric-label">Revenus libres cumulés</div><div class="metric-val pos">6 503 €</div><div class="metric-change">Fin jan. 2027</div></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Objectifs d'épargne</div>
+          <div class="goal-item">
+            <div class="goal-header"><span class="goal-name">Épargne générale (libre)</span><span class="goal-amounts">1 940 / 10 000 €</span></div>
+            <div class="progress-track"><div class="progress-fill fill-green" style="width:19.4%"></div></div>
+            <div class="goal-meta">19% · +1 940 €/an · objectif 2027</div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-header"><span class="goal-name">Fonds d'urgence R-Net</span><span class="goal-amounts">500 / 4 900 €</span></div>
+            <div class="progress-track"><div class="progress-fill fill-amber" style="width:10.2%"></div></div>
+            <div class="goal-meta">10% · +500 €/mois à partir de juil.</div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-header"><span class="goal-name">Compte commun HSBC</span><span class="goal-amounts">340 / 4 080 €</span></div>
+            <div class="progress-track"><div class="progress-fill fill-blue" style="width:8.3%"></div></div>
+            <div class="goal-meta">8% · 340 €/mois · Australie</div>
+          </div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+            <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:13px" onclick="toast('Fonctionnalité disponible en Phase 2')">+ Ajouter un objectif</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Répartition mensuelle de l'épargne</div>
+          <div class="chart-wrap"><canvas id="chartSavings"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTIONS -->
+    <div id="page-projections" class="page">
+      <div class="page-header">
+        <div class="page-title">Projections & Simulations</div>
+        <div class="page-sub">Simulez l'impact de changements sur vos finances</div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Paramètres de simulation</div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Salaire net mensuel</span><span id="sl-salaire">3 171 €</span></div>
+            <input type="range" min="2000" max="6000" value="3171" step="50" oninput="updateProjection()" id="r-salaire">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Dépenses fixes</span><span id="sl-depenses">1 696 €</span></div>
+            <input type="range" min="800" max="3000" value="1696" step="50" oninput="updateProjection()" id="r-depenses">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Épargne mensuelle</span><span id="sl-epargne">340 €</span></div>
+            <input type="range" min="0" max="2000" value="340" step="50" oninput="updateProjection()" id="r-epargne">
+          </div>
+          <div style="margin-top:16px;padding:14px;background:var(--green-light);border-radius:var(--radius);border:1px solid #a7f3d0">
+            <div class="tax-result-row"><span>Revenus libres / mois</span><span class="tax-result-val good" id="proj-libres">1 405 €</span></div>
+            <div class="tax-result-row"><span>Épargne annuelle</span><span class="tax-result-val good" id="proj-annuel">4 080 €</span></div>
+            <div class="tax-result-row"><span>Capital dans 5 ans</span><span class="tax-result-val good" id="proj-5ans">20 400 €</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Revenus libres projetés (12 mois)</div>
+          <div class="chart-wrap"><canvas id="chartProj"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAX -->
+    <div id="page-tax" class="page">
+      <div class="page-header">
+        <div class="page-title">Impôt sur le revenu <span class="tag tag-fy">FY 2025–26</span></div>
+        <div class="page-sub">Estimation basée sur les tranches ATO en vigueur</div>
+      </div>
+      <div class="ato-grid">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">Revenu imposable</div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Revenu brut annuel</span><span id="ato-gross">A$75 000</span></div>
+              <input type="range" min="18201" max="200000" value="75000" step="500" oninput="calcTax()" id="r-gross">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Déductions totales</span><span id="ato-ded">A$3 000</span></div>
+              <input type="range" min="0" max="20000" value="3000" step="200" oninput="calcTax()" id="r-ded">
+            </div>
+          </div>
+          <div class="tax-result-box" id="tax-result-box">
+            <div class="tax-result-row"><span>Revenu imposable</span><span class="tax-result-val" id="tr-taxable">A$72 000</span></div>
+            <div class="tax-result-row"><span>Impôt brut</span><span class="tax-result-val" id="tr-gross-tax">A$14 947</span></div>
+            <div class="tax-result-row"><span>Low income tax offset</span><span class="tax-result-val good" id="tr-lito">−A$0</span></div>
+            <div class="tax-result-row"><span>Medicare Levy (2%)</span><span class="tax-result-val" id="tr-medicare">A$1 440</span></div>
+            <div class="tax-result-row total"><span>Impôt total estimé</span><span class="tax-result-val" id="tr-total">A$16 387</span></div>
+            <div class="tax-result-row"><span>Taux effectif</span><span class="tax-result-val" id="tr-rate">21.8%</span></div>
+            <div class="tax-result-row"><span>Revenu net après impôt</span><span class="tax-result-val good" id="tr-net">A$58 613</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Tranches ATO 2025–26</div>
+          <div id="tax-brackets">
+            <div class="tax-bracket-row" id="br-0"><span class="bracket-range">$0 – $18,200</span><span class="bracket-rate">0%</span><div class="bracket-bar-wrap"><div class="bracket-bar" style="width:0%"></div></div></div>
+            <div class="tax-bracket-row" id="br-1"><span class="bracket-range">$18,201 – $45,000</span><span class="bracket-rate">19%</span><div class="bracket-bar-wrap"><div class="bracket-bar" style="width:19%"></div></div></div>
+            <div class="tax-bracket-row" id="br-2"><span class="bracket-range">$45,001 – $120,000</span><span class="bracket-rate">32.5%</span><div class="bracket-bar-wrap"><div class="bracket-bar" style="width:32.5%"></div></div></div>
+            <div class="tax-bracket-row" id="br-3"><span class="bracket-range">$120,001 – $180,000</span><span class="bracket-rate">37%</span><div class="bracket-bar-wrap"><div class="bracket-bar" style="width:37%"></div></div></div>
+            <div class="tax-bracket-row" id="br-4"><span class="bracket-range">$180,001+</span><span class="bracket-rate">45%</span><div class="bracket-bar-wrap"><div class="bracket-bar" style="width:45%"></div></div></div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="card-title">Déductions courantes</div>
+            <div class="deduction-item"><div class="deduction-check checked" id="dc-wfh" onclick="toggleDed(this)"></div><span class="deduction-label">Work from home (67c/h)</span><span class="deduction-amount">+A$1 500</span></div>
+            <div class="deduction-item"><div class="deduction-check checked" id="dc-tools" onclick="toggleDed(this)"></div><span class="deduction-label">Outils & équipements</span><span class="deduction-amount">+A$800</span></div>
+            <div class="deduction-item"><div class="deduction-check" id="dc-uni" onclick="toggleDed(this)"></div><span class="deduction-label">Formation professionnelle</span><span class="deduction-amount">+A$2 000</span></div>
+            <div class="deduction-item"><div class="deduction-check" id="dc-travel" onclick="toggleDed(this)"></div><span class="deduction-label">Frais de déplacement</span><span class="deduction-amount">+A$1 200</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPER -->
+    <div id="page-super" class="page">
+      <div class="page-header">
+        <div class="page-title">Superannuation</div>
+        <div class="page-sub">Retraite australienne · FY 2025–26</div>
+      </div>
+      <div class="super-card">
+        <div class="super-label">Solde estimé</div>
+        <div class="super-balance">A$42 800</div>
+        <div class="super-sub">Mis à jour au 1er janv. 2026</div>
+        <div class="super-meta">
+          <div class="super-meta-item"><div class="super-meta-label">Contributions employeur</div><div class="super-meta-val">11.5%</div></div>
+          <div class="super-meta-item"><div class="super-meta-label">Concessional cap</div><div class="super-meta-val">A$30 000</div></div>
+          <div class="super-meta-item"><div class="super-meta-label">Non-concessional cap</div><div class="super-meta-val">A$120 000</div></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Contributions cette année</div>
+          <div class="budget-row"><span class="budget-label">Employeur (11.5% SGC)</span><span class="budget-amount pos" id="super-employer">A$8 625</span></div>
+          <div class="budget-row"><span class="budget-label">Personal (salary sacrifice)</span><span class="budget-amount pos" id="super-ss">A$0</span></div>
+          <div class="budget-row"><span class="budget-label">Personal (after-tax)</span><span class="budget-amount pos">A$0</span></div>
+          <div class="budget-total-row"><span>Total contributions</span><span class="pos" style="font-family:var(--mono)" id="super-total">A$8 625</span></div>
+          <div style="margin-top:12px">
+            <div class="goal-header"><span class="goal-name">Concessional cap utilisé</span><span class="goal-amounts" id="super-cap-used">8 625 / 30 000</span></div>
+            <div class="progress-track"><div class="progress-fill fill-green" id="super-cap-bar" style="width:28.8%"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Simulation croissance</div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Âge actuel</span><span id="sl-age">30 ans</span></div>
+            <input type="range" min="18" max="60" value="30" step="1" oninput="calcSuper()" id="r-age">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Rendement annuel</span><span id="sl-return">7%</span></div>
+            <input type="range" min="3" max="12" value="7" step="0.5" oninput="calcSuper()" id="r-return">
+          </div>
+          <div style="padding:14px;background:var(--green-light);border-radius:var(--radius);border:1px solid #a7f3d0;margin-top:8px">
+            <div class="tax-result-row"><span>Années jusqu'à 67 ans</span><span class="tax-result-val" id="super-years">37 ans</span></div>
+            <div class="tax-result-row"><span>Solde projeté à 67 ans</span><span class="tax-result-val good" id="super-proj">A$548 400</span></div>
+            <div class="tax-result-row"><span>Revenu retraite annuel est.</span><span class="tax-result-val good" id="super-income">A$27 420</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALARY SACRIFICE -->
+    <div id="page-salary" class="page">
+      <div class="page-header">
+        <div class="page-title">Salary sacrifice & Contributions personnelles</div>
+        <div class="page-sub">Optimisez vos contributions super avant impôt</div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Simulateur salary sacrifice</div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Salaire brut annuel</span><span id="ss-gross">A$75 000</span></div>
+            <input type="range" min="30000" max="200000" value="75000" step="1000" oninput="calcSS()" id="ss-r-gross">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Montant sacrifié / an</span><span id="ss-amount">A$5 000</span></div>
+            <input type="range" min="0" max="20000" value="5000" step="500" oninput="calcSS()" id="ss-r-amount">
+          </div>
+          <div class="ss-result">
+            <div class="ss-box before">
+              <div class="ss-box-label">Sans sacrifice</div>
+              <div class="ss-row"><span>Salaire brut</span><span class="ss-row-val" id="ss-b-gross">A$75 000</span></div>
+              <div class="ss-row"><span>Impôt estimé</span><span class="ss-row-val" id="ss-b-tax">−A$16 387</span></div>
+              <div class="ss-row"><span>Net en main</span><span class="ss-row-val" id="ss-b-net">A$58 613</span></div>
+            </div>
+            <div class="ss-box after">
+              <div class="ss-box-label">Avec sacrifice</div>
+              <div class="ss-row"><span>Salaire imposable</span><span class="ss-row-val" id="ss-a-gross">A$70 000</span></div>
+              <div class="ss-row"><span>Impôt estimé</span><span class="ss-row-val" id="ss-a-tax">−A$14 947</span></div>
+              <div class="ss-row"><span>Net en main</span><span class="ss-row-val" id="ss-a-net">A$55 053</span></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:12px;background:var(--amber-light);border:1px solid #fde68a;border-radius:var(--radius)">
+            <div class="tax-result-row"><span style="font-weight:500">Économie fiscale</span><span class="tax-result-val" id="ss-saving" style="color:var(--amber);font-weight:500">A$1 440</span></div>
+            <div class="tax-result-row"><span>Contribution super totale</span><span class="tax-result-val" id="ss-super-total">A$13 625</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contribution personnelle (Section 290)</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Les contributions after-tax peuvent être déduites de votre revenu imposable si vous remplissez les conditions (less than 10% income test).</div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Contribution après impôt</span><span id="pc-amount">A$3 000</span></div>
+            <input type="range" min="0" max="20000" value="3000" step="500" oninput="calcPC()" id="pc-r-amount">
+          </div>
+          <div style="margin-top:12px;padding:14px;background:var(--green-light);border:1px solid #a7f3d0;border-radius:var(--radius)">
+            <div class="tax-result-row"><span>Déduction Section 290</span><span class="tax-result-val good" id="pc-ded">A$3 000</span></div>
+            <div class="tax-result-row"><span>Économie fiscale</span><span class="tax-result-val good" id="pc-saving">A$975</span></div>
+            <div class="tax-result-row"><span>Coût net réel</span><span class="tax-result-val" id="pc-net-cost">A$2 025</span></div>
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);line-height:1.6;padding:10px;background:var(--surface2);border-radius:8px">
+            Tax (15%) prélevée par le fonds sur les contributions concessionnelles. Vérifiez que le total (employeur + SS + perso) ne dépasse pas A$30 000.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let currentUser = 'thomas';
+let currentMonth = 1;
+
+const monthData = [
+  { name:'Février 2026', salaire:3171, revenu:3441, depenses:1696, epargne:340, rnet:0, libres:1405 },
+  { name:'Mars 2026',    salaire:3171, revenu:3441, depenses:1643, epargne:1430, rnet:500, libres:368 },
+  { name:'Avril 2026',   salaire:3171, revenu:3441, depenses:1680, epargne:1440, rnet:1100, libres:321 },
+  { name:'Mai 2026',     salaire:3171, revenu:3441, depenses:1680, epargne:1440, rnet:1100, libres:321 },
+  { name:'Juin 2026',    salaire:3171, revenu:3441, depenses:1680, epargne:1440, rnet:1100, libres:321 },
+  { name:'Juillet 2026', salaire:3171, revenu:3441, depenses:1680, epargne:1440, rnet:1100, libres:321 },
+  { name:'Août 2026',    salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+  { name:'Sept 2026',    salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+  { name:'Oct 2026',     salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+  { name:'Nov 2026',     salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+  { name:'Déc 2026',     salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+  { name:'Janv 2027',    salaire:3500, revenu:3770, depenses:1256, epargne:1940, rnet:0, libres:574 },
+];
+
+function fmt(v, currency='€') { return (v < 0 ? '−' : '') + Math.abs(Math.round(v)).toLocaleString('fr-FR') + ' ' + currency; }
+function fmtAUD(v) { return (v<0?'−':'')+'A$'+Math.abs(Math.round(v)).toLocaleString('fr-FR'); }
+
+function selectProfile(user, btn) {
+  currentUser = user;
+  document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function login() {
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  applyUser();
+  initCharts();
+  calcTax(); calcSuper(); calcSS(); calcPC(); updateProjection();
+}
+
+function logout() {
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login').classList.add('active');
+}
+
+function applyUser() {
+  const isDorothy = currentUser === 'dorothy';
+  document.getElementById('nav-avatar').textContent = isDorothy ? 'DO' : 'TH';
+  document.getElementById('nav-avatar').className = 'avatar ' + (isDorothy ? 'av-d' : 'av-t');
+  document.getElementById('nav-name').textContent = isDorothy ? 'Dorothy' : 'Thomas';
+  document.getElementById('dash-title').textContent = 'Bonjour, ' + (isDorothy ? 'Dorothy' : 'Thomas');
+  document.getElementById('dash-sub').textContent = isDorothy
+    ? 'Vue d\'ensemble · AUD · Australie'
+    : 'Février 2026 · Voici votre situation financière du mois';
+  document.querySelectorAll('.ato-section,.ato-item').forEach(el => {
+    el.style.display = isDorothy ? '' : 'none';
+  });
+  if (isDorothy) {
+    document.getElementById('dm-revenu').textContent = 'A$6 250';
+    document.getElementById('dm-depenses').textContent = '−A$2 100';
+    document.getElementById('dm-epargne').textContent = 'A$800';
+    document.getElementById('dm-libres').textContent = 'A$3 350';
+  } else {
+    document.getElementById('dm-revenu').textContent = '3 441 €';
+    document.getElementById('dm-depenses').textContent = '−1 696 €';
+    document.getElementById('dm-epargne').textContent = '−340 €';
+    document.getElementById('dm-libres').textContent = '1 405 €';
+  }
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function changeMonth(dir) {
+  currentMonth = Math.max(0, Math.min(11, currentMonth + dir));
+  const d = monthData[currentMonth];
+  document.getElementById('month-label').textContent = d.name;
+  document.getElementById('bt-revenus').textContent = fmt(d.revenu);
+  document.getElementById('bt-depenses').textContent = fmt(-d.depenses);
+  document.getElementById('ba-salaire').textContent = fmt(d.salaire);
+  document.getElementById('ba-epargne').textContent = d.epargne > 0 ? fmt(-d.epargne) : '0 €';
+  document.getElementById('ba-rnet').textContent = d.rnet > 0 ? fmt(-d.rnet) : '0 €';
+  document.getElementById('bt-libres').textContent = fmt(d.libres);
+  document.getElementById('bb-salaire').style.width = Math.round(d.salaire / d.revenu * 100) + '%';
+  const auc = d.depenses > 1600 ? 174 : 80;
+  document.getElementById('ba-auchan').textContent = fmt(-auc);
+  document.getElementById('ba-cmso').textContent = currentMonth < 6 ? fmt(-155) : '0 €';
+  document.getElementById('ba-bouygues').textContent = currentMonth === 0 ? fmt(-54) : fmt(-20);
+}
+
+let chartDash, chartSavings, chartProj;
+function initCharts() {
+  const libres = monthData.map(d => d.libres);
+  const labels = monthData.map(d => d.name.split(' ')[0]);
+  const green = '#1a7a4a', greenL = '#e8f5ee', red = '#c0392b';
+
+  if (chartDash) chartDash.destroy();
+  chartDash = new Chart(document.getElementById('chartDash'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: libres,
+        backgroundColor: libres.map(v => v > 500 ? green : '#f59e0b'),
+        borderRadius: 4, borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } } },
+      scales: {
+        x: { ticks: { font: { size: 11 }, autoSkip: false, maxRotation: 45 }, grid: { display: false } },
+        y: { ticks: { callback: v => v+'€', font: { size: 11 } }, grid: { color: '#e4e2dc' } }
+      }
+    }
+  });
+
+  if (chartSavings) chartSavings.destroy();
+  chartSavings = new Chart(document.getElementById('chartSavings'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Épargne libre', 'R-Net', 'HSBC AUD'],
+      datasets: [{ data: [10190, 4900, 4080], backgroundColor: [green, '#f59e0b', '#3b82f6'], borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 12, boxWidth: 10 } } }
+    }
+  });
+
+  updateProjection();
+}
+
+function updateProjection() {
+  const sal = parseInt(document.getElementById('r-salaire').value);
+  const dep = parseInt(document.getElementById('r-depenses').value);
+  const ep = parseInt(document.getElementById('r-epargne').value);
+  const libres = sal + 270 - dep - ep;
+  document.getElementById('sl-salaire').textContent = fmt(sal);
+  document.getElementById('sl-depenses').textContent = fmt(dep);
+  document.getElementById('sl-epargne').textContent = fmt(ep);
+  document.getElementById('proj-libres').textContent = fmt(Math.max(0, libres));
+  document.getElementById('proj-annuel').textContent = fmt(ep * 12);
+  document.getElementById('proj-5ans').textContent = fmt(ep * 60);
+
+  const months = Array.from({length:12},(_,i)=>i);
+  const projData = months.map(() => Math.max(0, libres));
+
+  if (chartProj) chartProj.destroy();
+  chartProj = new Chart(document.getElementById('chartProj'), {
+    type: 'line',
+    data: {
+      labels: monthData.map(d => d.name.split(' ')[0]),
+      datasets: [{
+        data: projData,
+        borderColor: '#1a7a4a', backgroundColor: '#e8f5ee',
+        fill: true, tension: 0.3, pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } } },
+      scales: {
+        x: { ticks: { font: { size: 11 }, autoSkip: false, maxRotation: 45 }, grid: { display: false } },
+        y: { ticks: { callback: v => v+'€', font: { size: 11 } }, grid: { color: '#e4e2dc' } }
+      }
+    }
+  });
+}
+
+function calcTaxATO(income) {
+  if (income <= 18200) return 0;
+  if (income <= 45000) return (income - 18200) * 0.19;
+  if (income <= 120000) return 5092 + (income - 45000) * 0.325;
+  if (income <= 180000) return 29467 + (income - 120000) * 0.37;
+  return 51667 + (income - 180000) * 0.45;
+}
+
+function calcLITO(income) {
+  if (income <= 37500) return 700;
+  if (income <= 45000) return 700 - (income - 37500) * 0.05;
+  if (income <= 66667) return 325 - (income - 45000) * 0.015;
+  return 0;
+}
+
+function calcTax() {
+  const gross = parseInt(document.getElementById('r-gross').value);
+  const ded = parseInt(document.getElementById('r-ded').value);
+  const taxable = Math.max(0, gross - ded);
+  const baseTax = calcTaxATO(taxable);
+  const lito = calcLITO(taxable);
+  const medicare = taxable * 0.02;
+  const total = Math.max(0, baseTax - lito + medicare);
+  const rate = (total / gross * 100).toFixed(1);
+  const net = gross - total;
+
+  document.getElementById('ato-gross').textContent = fmtAUD(gross);
+  document.getElementById('ato-ded').textContent = fmtAUD(ded);
+  document.getElementById('tr-taxable').textContent = fmtAUD(taxable);
+  document.getElementById('tr-gross-tax').textContent = fmtAUD(baseTax);
+  document.getElementById('tr-lito').textContent = '−' + fmtAUD(lito);
+  document.getElementById('tr-medicare').textContent = fmtAUD(medicare);
+  document.getElementById('tr-total').textContent = fmtAUD(total);
+  document.getElementById('tr-rate').textContent = rate + '%';
+  document.getElementById('tr-net').textContent = fmtAUD(net);
+
+  const brackets = [18200, 45000, 120000, 180000, Infinity];
+  for (let i = 0; i < 5; i++) {
+    const row = document.getElementById('br-' + i);
+    if (taxable > (i === 0 ? 0 : brackets[i-1])) {
+      row.style.background = '#e8f5ee';
+      row.style.borderRadius = '6px';
+      row.style.padding = '9px 6px';
+      row.style.margin = '0 -6px';
+    } else {
+      row.style.background = '';
+      row.style.padding = '';
+      row.style.margin = '';
+    }
+  }
+}
+
+function toggleDed(el) {
+  el.classList.toggle('checked');
+  calcTax();
+  toast('Déductions mises à jour');
+}
+
+function calcSuper() {
+  const age = parseInt(document.getElementById('r-age').value);
+  const ret = parseFloat(document.getElementById('r-return').value) / 100;
+  const years = 67 - age;
+  const balance = 42800;
+  const annualContrib = 8625;
+  let proj = balance;
+  for (let i = 0; i < years; i++) { proj = (proj + annualContrib) * (1 + ret); }
+  const income = proj * 0.05;
+
+  document.getElementById('sl-age').textContent = age + ' ans';
+  document.getElementById('sl-return').textContent = (ret*100).toFixed(1) + '%';
+  document.getElementById('super-years').textContent = years + ' ans';
+  document.getElementById('super-proj').textContent = fmtAUD(proj);
+  document.getElementById('super-income').textContent = fmtAUD(income);
+}
+
+function calcSS() {
+  const gross = parseInt(document.getElementById('ss-r-gross').value);
+  const ss = parseInt(document.getElementById('ss-r-amount').value);
+  const taxBefore = calcTaxATO(gross) + gross * 0.02 - calcLITO(gross);
+  const taxAfter = calcTaxATO(gross - ss) + (gross - ss) * 0.02 - calcLITO(gross - ss);
+  const saving = taxBefore - taxAfter;
+  const netBefore = gross - taxBefore;
+  const netAfter = gross - ss - taxAfter;
+  const superTotal = gross * 0.115 + ss;
+
+  document.getElementById('ss-gross').textContent = fmtAUD(gross);
+  document.getElementById('ss-amount').textContent = fmtAUD(ss);
+  document.getElementById('ss-b-gross').textContent = fmtAUD(gross);
+  document.getElementById('ss-b-tax').textContent = '−' + fmtAUD(taxBefore);
+  document.getElementById('ss-b-net').textContent = fmtAUD(netBefore);
+  document.getElementById('ss-a-gross').textContent = fmtAUD(gross - ss);
+  document.getElementById('ss-a-tax').textContent = '−' + fmtAUD(taxAfter);
+  document.getElementById('ss-a-net').textContent = fmtAUD(netAfter);
+  document.getElementById('ss-saving').textContent = fmtAUD(saving);
+  document.getElementById('ss-super-total').textContent = fmtAUD(superTotal);
+  document.getElementById('super-ss').textContent = fmtAUD(ss);
+  document.getElementById('super-total').textContent = fmtAUD(superTotal);
+  const capPct = Math.min(100, superTotal / 30000 * 100);
+  document.getElementById('super-cap-bar').style.width = capPct + '%';
+  document.getElementById('super-cap-used').textContent = Math.round(superTotal).toLocaleString('fr-FR') + ' / 30 000';
+}
+
+function calcPC() {
+  const amount = parseInt(document.getElementById('pc-r-amount').value);
+  const taxRate = 0.325;
+  const saving = amount * taxRate;
+  document.getElementById('pc-amount').textContent = fmtAUD(amount);
+  document.getElementById('pc-ded').textContent = fmtAUD(amount);
+  document.getElementById('pc-saving').textContent = fmtAUD(saving);
+  document.getElementById('pc-net-cost').textContent = fmtAUD(amount - saving);
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
