@@ -2,6 +2,7 @@ import { useState } from 'react'
 import BudgetTable from './BudgetTable'
 import ForecastBudget from './ForecastBudget'
 import Savings from './Savings'
+import IncomeTax from './IncomeTax'
 
 const mono = 'DM Mono, monospace'
 const sans = 'DM Sans, sans-serif'
@@ -144,7 +145,7 @@ function Dashboard({ user, onLogout }) {
         {activePage === 'forecast' && <ForecastBudget user={user} />}
         {activePage === 'savings' && <Savings user={user} />}
         {activePage === 'projections' && <ComingSoon title="Projections & Simulations" />}
-        {activePage === 'tax' && <ComingSoon title="Income Tax (ATO)" />}
+        {activePage === 'tax' && <IncomeTax user={user} />}
         {activePage === 'super' && <ComingSoon title="Superannuation" />}
         {activePage === 'salary' && <ComingSoon title="Salary Sacrifice" />}
       </main>
