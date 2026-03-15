@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
+import TaxDeductions from './TaxDeductions'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const CATEGORIES = [
@@ -489,6 +490,7 @@ export default function BudgetTable({ user }) {
           ))}
         </div>
       )}
+      <TaxDeductions user={user} />
     </div>
   )
 }
