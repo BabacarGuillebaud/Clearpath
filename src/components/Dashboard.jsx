@@ -1,8 +1,8 @@
 import { useState } from 'react'
+import BudgetTable from './BudgetTable'
 
 const monoFont = 'DM Mono, monospace'
 const sansFont = 'DM Sans, sans-serif'
-
 const green = '#1a7a4a'
 const greenLight = '#e8f5ee'
 const border = '#e4e2dc'
@@ -12,7 +12,7 @@ const textHint = '#9e9b94'
 
 function Metric({ label, value, color }) {
   return (
-    <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '10px', padding: '16px' }}>
+    <div style={{ background: '#f0efeb', borderRadius: '10px', padding: '16px' }}>
       <div style={{ fontSize: '11px', color: textHint, fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '22px', fontWeight: '500', letterSpacing: '-0.03em', color: color, fontFamily: monoFont }}>{value}</div>
     </div>
@@ -38,7 +38,6 @@ function NavItem({ id, label, activePage, setActivePage }) {
 
 function Dashboard({ user, onLogout }) {
   const [activePage, setActivePage] = useState('dashboard')
-  const isAustralia = true
 
   const babacarMetrics = [
     { label: 'Revenu mensuel', value: '3 441 EUR', color: '#1a1917' },
@@ -54,7 +53,7 @@ function Dashboard({ user, onLogout }) {
     { label: 'Revenus libres', value: 'AUD 3 350', color: green },
   ]
 
-  const metrics = isAustralia ? dorothyMetrics : babacarMetrics
+  const metrics = user.id === 'dorothy' ? dorothyMetrics : babacarMetrics
 
   const pageTitle = {
     dashboard: `Bonjour, ${user.name}`,
@@ -70,7 +69,6 @@ function Dashboard({ user, onLogout }) {
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: sansFont, background: bg }}>
 
       <aside style={{ width: '220px', background: '#fff', borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '20px 20px 16px', borderBottom: `1px solid ${border}` }}>
           <div style={{ width: '26px', height: '26px', background: green, borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
@@ -82,13 +80,7 @@ function Dashboard({ user, onLogout }) {
         </div>
 
         <div style={{ margin: '12px 12px 0', padding: '10px 12px', background: bg, borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '28px', height: '28px', borderRadius: '50%',
-            background: user.id === 'babacar' ? '#dbeafe' : '#fce7f3',
-            color: user.id === 'babacar' ? '#1e40af' : '#9d174d',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '11px', fontWeight: '500'
-          }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: user.id === 'babacar' ? '#dbeafe' : '#fce7f3', color: user.id === 'babacar' ? '#1e40af' : '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '500' }}>
             {user.id === 'babacar' ? 'BA' : 'DO'}
           </div>
           <span style={{ fontSize: '13px', fontWeight: '500', flex: 1 }}>{user.name}</span>
@@ -100,17 +92,12 @@ function Dashboard({ user, onLogout }) {
           <NavItem id="budget" label="Budget mensuel" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="savings" label="Epargne" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="projections" label="Projections" activePage={activePage} setActivePage={setActivePage} />
-
-          {isAustralia && (
-            <>
-              <div style={{ fontSize: '10px', fontWeight: '500', color: textHint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '8px 8px 4px', marginTop: '8px' }}>
-                Australie (ATO)
-              </div>
-              <NavItem id="tax" label="Impot sur le revenu" activePage={activePage} setActivePage={setActivePage} />
-              <NavItem id="super" label="Superannuation" activePage={activePage} setActivePage={setActivePage} />
-              <NavItem id="salary" label="Salary sacrifice" activePage={activePage} setActivePage={setActivePage} />
-            </>
-          )}
+          <div style={{ fontSize: '10px', fontWeight: '500', color: textHint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '8px 8px 4px', marginTop: '8px' }}>
+            Australie (ATO)
+          </div>
+          <NavItem id="tax" label="Impot sur le revenu" activePage={activePage} setActivePage={setActivePage} />
+          <NavItem id="super" label="Superannuation" activePage={activePage} setActivePage={setActivePage} />
+          <NavItem id="salary" label="Salary sacrifice" activePage={activePage} setActivePage={setActivePage} />
         </nav>
 
         <div style={{ padding: '12px', borderTop: `1px solid ${border}` }}>
@@ -130,18 +117,39 @@ function Dashboard({ user, onLogout }) {
           )}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
-          {metrics.map(m => <Metric key={m.label} {...m} />)}
-        </div>
-
-        <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px' }}>
-          <div style={{ fontSize: '13px', fontWeight: '500', color: textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '12px' }}>
-            {pageTitle[activePage]}
+        {activePage === 'dashboard' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+            {metrics.map(m => <Metric key={m.label} {...m} />)}
           </div>
-          <p style={{ fontSize: '14px', color: textMuted, lineHeight: '1.6' }}>
-            Ce module sera connecte a Supabase dans les prochaines etapes.
-          </p>
-        </div>
+        )}
+
+        {activePage === 'budget' && <BudgetTable user={user} />}
+
+        {activePage === 'savings' && (
+          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
+            Epargne — a venir
+          </div>
+        )}
+        {activePage === 'projections' && (
+          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
+            Projections — a venir
+          </div>
+        )}
+        {activePage === 'tax' && (
+          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
+            Impot ATO — a venir
+          </div>
+        )}
+        {activePage === 'super' && (
+          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
+            Superannuation — a venir
+          </div>
+        )}
+        {activePage === 'salary' && (
+          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
+            Salary sacrifice — a venir
+          </div>
+        )}
       </main>
     </div>
   )
