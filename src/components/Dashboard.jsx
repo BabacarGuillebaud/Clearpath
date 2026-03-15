@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import BudgetTable from './BudgetTable'
+import ForecastBudget from './ForecastBudget'
 import Savings from './Savings'
 
 const mono = 'DM Mono, monospace'
@@ -67,7 +68,8 @@ function Dashboard({ user, onLogout }) {
 
   const pageTitles = {
     dashboard: `Welcome, ${user.name}`,
-    budget: 'Monthly Budget',
+    budget: 'Actual Budget',
+    forecast: 'Forecasted Budget',
     savings: 'Savings & Goals',
     projections: 'Projections & Simulations',
     tax: 'Income Tax',
@@ -78,7 +80,7 @@ function Dashboard({ user, onLogout }) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: sans, background: bg }}>
 
-      <aside style={{ width: '220px', background: '#fff', borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'sticky', top: 0, height: '100vh' }}>
+      <aside style={{ width: '220px', background: '#fff', borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '20px 20px 16px', borderBottom: `1px solid ${border}` }}>
           <div style={{ width: '26px', height: '26px', background: green, borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
@@ -101,8 +103,11 @@ function Dashboard({ user, onLogout }) {
           <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 8px 6px' }}>Overview</div>
           <NavItem id="dashboard" label="Dashboard" activePage={activePage} setActivePage={setActivePage} />
 
+          <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '10px 8px 6px' }}>Budget</div>
+          <NavItem id="budget" label="Actual Budget" activePage={activePage} setActivePage={setActivePage} />
+          <NavItem id="forecast" label="Forecasted Budget" activePage={activePage} setActivePage={setActivePage} />
+
           <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '10px 8px 6px' }}>Finances</div>
-          <NavItem id="budget" label="Monthly Budget" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="savings" label="Savings & Goals" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="projections" label="Projections" activePage={activePage} setActivePage={setActivePage} />
 
@@ -136,6 +141,7 @@ function Dashboard({ user, onLogout }) {
         )}
 
         {activePage === 'budget' && <BudgetTable user={user} />}
+        {activePage === 'forecast' && <ForecastBudget user={user} />}
         {activePage === 'savings' && <Savings user={user} />}
         {activePage === 'projections' && <ComingSoon title="Projections & Simulations" />}
         {activePage === 'tax' && <ComingSoon title="Income Tax (ATO)" />}
