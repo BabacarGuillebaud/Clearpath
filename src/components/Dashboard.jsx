@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import BudgetTable from './BudgetTable'
 
-const monoFont = 'DM Mono, monospace'
-const sansFont = 'DM Sans, sans-serif'
+const mono = 'DM Mono, monospace'
+const sans = 'DM Sans, sans-serif'
 const green = '#1a7a4a'
 const greenLight = '#e8f5ee'
 const border = '#e4e2dc'
 const bg = '#f7f6f3'
-const textMuted = '#6b6860'
-const textHint = '#9e9b94'
+const muted = '#6b6860'
+const hint = '#9e9b94'
 
 function Metric({ label, value, color }) {
   return (
     <div style={{ background: '#f0efeb', borderRadius: '10px', padding: '16px' }}>
-      <div style={{ fontSize: '11px', color: textHint, fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>{label}</div>
-      <div style={{ fontSize: '22px', fontWeight: '500', letterSpacing: '-0.03em', color: color, fontFamily: monoFont }}>{value}</div>
+      <div style={{ fontSize: '11px', color: hint, fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '22px', fontWeight: '500', letterSpacing: '-0.03em', color, fontFamily: mono }}>{value}</div>
     </div>
   )
 }
@@ -27,9 +27,9 @@ function NavItem({ id, label, activePage, setActivePage }) {
         display: 'flex', alignItems: 'center', padding: '8px 10px', borderRadius: '8px',
         cursor: 'pointer', fontSize: '13.5px', border: 'none',
         background: isActive ? greenLight : 'transparent',
-        color: isActive ? green : textMuted,
+        color: isActive ? green : muted,
         fontWeight: isActive ? '500' : '400',
-        width: '100%', textAlign: 'left', fontFamily: sansFont
+        width: '100%', textAlign: 'left', fontFamily: sans
       }}>
       {label}
     </button>
@@ -40,33 +40,33 @@ function Dashboard({ user, onLogout }) {
   const [activePage, setActivePage] = useState('dashboard')
 
   const babacarMetrics = [
-    { label: 'Revenu mensuel', value: '3 441 EUR', color: '#1a1917' },
-    { label: 'Depenses', value: '-1 696 EUR', color: '#c0392b' },
-    { label: 'Epargne', value: '-340 EUR', color: green },
-    { label: 'Revenus libres', value: '1 405 EUR', color: green },
+    { label: 'Monthly income', value: '3,441 EUR', color: '#1a1917' },
+    { label: 'Expenses', value: '-1,696 EUR', color: '#c0392b' },
+    { label: 'Savings', value: '-340 EUR', color: green },
+    { label: 'Free income', value: '1,405 EUR', color: green },
   ]
 
   const dorothyMetrics = [
-    { label: 'Revenu mensuel', value: 'AUD 6 250', color: '#1a1917' },
-    { label: 'Depenses', value: '-AUD 2 100', color: '#c0392b' },
-    { label: 'Epargne', value: 'AUD 800', color: green },
-    { label: 'Revenus libres', value: 'AUD 3 350', color: green },
+    { label: 'Monthly income', value: 'AUD 6,250', color: '#1a1917' },
+    { label: 'Expenses', value: '-AUD 2,100', color: '#c0392b' },
+    { label: 'Savings', value: 'AUD 800', color: green },
+    { label: 'Free income', value: 'AUD 3,350', color: green },
   ]
 
   const metrics = user.id === 'dorothy' ? dorothyMetrics : babacarMetrics
 
-  const pageTitle = {
-    dashboard: `Bonjour, ${user.name}`,
-    budget: 'Budget mensuel',
-    savings: 'Epargne et Objectifs',
-    projections: 'Projections et Simulations',
-    tax: 'Impot sur le revenu',
+  const pageTitles = {
+    dashboard: `Welcome, ${user.name}`,
+    budget: 'Monthly Budget',
+    savings: 'Savings & Goals',
+    projections: 'Projections & Simulations',
+    tax: 'Income Tax',
     super: 'Superannuation',
-    salary: 'Salary sacrifice',
+    salary: 'Salary Sacrifice',
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: sansFont, background: bg }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: sans, background: bg }}>
 
       <aside style={{ width: '220px', background: '#fff', borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '20px 20px 16px', borderBottom: `1px solid ${border}` }}>
@@ -80,29 +80,29 @@ function Dashboard({ user, onLogout }) {
         </div>
 
         <div style={{ margin: '12px 12px 0', padding: '10px 12px', background: bg, borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: user.id === 'babacar' ? '#dbeafe' : '#fce7f3', color: user.id === 'babacar' ? '#1e40af' : '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '500' }}>
-            {user.id === 'babacar' ? 'BA' : 'DO'}
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: user.initials === 'BA' ? '#dbeafe' : '#fce7f3', color: user.initials === 'BA' ? '#1e40af' : '#9d174d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '500' }}>
+            {user.initials}
           </div>
           <span style={{ fontSize: '13px', fontWeight: '500', flex: 1 }}>{user.name}</span>
-          <button onClick={onLogout} style={{ fontSize: '11px', color: green, fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Changer</button>
+          <button onClick={onLogout} style={{ fontSize: '11px', color: green, fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}>Switch</button>
         </div>
 
         <nav style={{ padding: '16px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 8px 6px' }}>Overview</div>
           <NavItem id="dashboard" label="Dashboard" activePage={activePage} setActivePage={setActivePage} />
-          <NavItem id="budget" label="Budget mensuel" activePage={activePage} setActivePage={setActivePage} />
-          <NavItem id="savings" label="Epargne" activePage={activePage} setActivePage={setActivePage} />
+          <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '10px 8px 6px' }}>Finances</div>
+          <NavItem id="budget" label="Monthly Budget" activePage={activePage} setActivePage={setActivePage} />
+          <NavItem id="savings" label="Savings & Goals" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="projections" label="Projections" activePage={activePage} setActivePage={setActivePage} />
-          <div style={{ fontSize: '10px', fontWeight: '500', color: textHint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '8px 8px 4px', marginTop: '8px' }}>
-            Australie (ATO)
-          </div>
-          <NavItem id="tax" label="Impot sur le revenu" activePage={activePage} setActivePage={setActivePage} />
+          <div style={{ fontSize: '10px', fontWeight: '500', color: hint, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '10px 8px 6px' }}>Australia (ATO)</div>
+          <NavItem id="tax" label="Income Tax" activePage={activePage} setActivePage={setActivePage} />
           <NavItem id="super" label="Superannuation" activePage={activePage} setActivePage={setActivePage} />
-          <NavItem id="salary" label="Salary sacrifice" activePage={activePage} setActivePage={setActivePage} />
+          <NavItem id="salary" label="Salary Sacrifice" activePage={activePage} setActivePage={setActivePage} />
         </nav>
 
         <div style={{ padding: '12px', borderTop: `1px solid ${border}` }}>
-          <button onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', color: textMuted, fontSize: '13px', width: '100%', background: 'none', border: 'none', fontFamily: sansFont }}>
-            Se deconnecter
+          <button onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', color: muted, fontSize: '13px', width: '100%', background: 'none', border: 'none', fontFamily: sans }}>
+            Sign out
           </button>
         </div>
       </aside>
@@ -110,10 +110,10 @@ function Dashboard({ user, onLogout }) {
       <main style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
         <div style={{ marginBottom: '24px' }}>
           <h1 style={{ fontSize: '20px', fontWeight: '500', letterSpacing: '-0.03em' }}>
-            {pageTitle[activePage]}
+            {pageTitles[activePage]}
           </h1>
           {activePage === 'dashboard' && (
-            <p style={{ fontSize: '13px', color: textMuted, marginTop: '2px' }}>Mars 2026 · Votre situation financiere</p>
+            <p style={{ fontSize: '13px', color: muted, marginTop: '2px' }}>March 2026 · Your financial overview</p>
           )}
         </div>
 
@@ -125,31 +125,13 @@ function Dashboard({ user, onLogout }) {
 
         {activePage === 'budget' && <BudgetTable user={user} />}
 
-        {activePage === 'savings' && (
-          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
-            Epargne — a venir
-          </div>
-        )}
-        {activePage === 'projections' && (
-          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
-            Projections — a venir
-          </div>
-        )}
-        {activePage === 'tax' && (
-          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
-            Impot ATO — a venir
-          </div>
-        )}
-        {activePage === 'super' && (
-          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
-            Superannuation — a venir
-          </div>
-        )}
-        {activePage === 'salary' && (
-          <div style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: textMuted }}>
-            Salary sacrifice — a venir
-          </div>
-        )}
+        {['savings', 'projections', 'tax', 'super', 'salary'].map(page => (
+          activePage === page && (
+            <div key={page} style={{ background: '#fff', border: `1px solid ${border}`, borderRadius: '16px', padding: '20px', color: muted }}>
+              {pageTitles[page]} — coming soon
+            </div>
+          )
+        ))}
       </main>
     </div>
   )
